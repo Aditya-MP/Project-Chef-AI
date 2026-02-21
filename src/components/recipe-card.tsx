@@ -21,7 +21,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
     const isFavorite = favoriteRecipes.some(r => r.recipeName === recipe.recipeName);
 
     const description = recipe.steps.length > 0 ? `${recipe.steps[0].substring(0, 100)}...` : 'No instructions available.';
-    
+
     const handleToggleFavorite = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (!user) {
@@ -38,7 +38,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
     return (
         <Card className="flex flex-col h-full shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden rounded-xl border">
             <div className="relative">
-                <Image 
+                <Image
                     src={`https://dummyimage.com/600x400/f5a623/ffffff.png&text=${encodeURIComponent(recipe.recipeName)}`}
                     alt={recipe.recipeName}
                     data-ai-hint="food dish"
@@ -46,20 +46,20 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
                     height={400}
                     className="object-cover w-full h-48"
                 />
-                 <Button 
-                    variant="ghost" 
-                    size="icon" 
+                <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={handleToggleFavorite}
                     className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full text-muted-foreground hover:text-red-500"
                 >
                     <Heart className={cn("w-6 h-6 transition-all", isFavorite ? "fill-red-500 text-red-500" : "")} />
                 </Button>
             </div>
-            
+
             <CardHeader>
                 <CardTitle className="font-headline tracking-tight text-xl">{recipe.recipeName}</CardTitle>
             </CardHeader>
-            
+
             <CardContent className="flex-1 space-y-4">
                 <p className="text-muted-foreground text-sm">{description}</p>
             </CardContent>
@@ -70,11 +70,11 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
                     {recipe.vegan && <Badge variant="outline">Vegan</Badge>}
                     {recipe.glutenFree && <Badge variant="outline">Gluten-Free</Badge>}
                 </div>
-                <Link href={`/full-recipe-view?recipe=${encodeURIComponent(recipe.recipeName)}`} passHref>
-                    <Button variant="ghost">
-                        View <ArrowRight className="ml-2"/>
-                    </Button>
-                </Link>
+                <Button variant="outline" size="sm" className="w-full sm:w-auto h-9 min-w-[120px]" asChild>
+                    <Link href={`/dashboard/full-recipe-view?recipe=${encodeURIComponent(recipe.recipeName)}`} passHref>
+                        View Recipe
+                    </Link>
+                </Button>
             </CardFooter>
         </Card>
     )

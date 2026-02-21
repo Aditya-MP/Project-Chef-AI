@@ -8,8 +8,9 @@
  * - AnalyzeIngredientsOutput - The return type for the analyzeIngredients function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+import type { AnalyzeIngredientsInput, AnalyzeIngredientsOutput } from '@/ai/types';
 
 const AnalyzeIngredientsInputSchema = z.object({
   ingredients: z.array(z.string()).describe('A list of ingredients to analyze.'),
@@ -23,17 +24,16 @@ const AnalyzeIngredientsInputSchema = z.object({
     .optional()
     .describe('User\'s dietary preferences.'),
 });
-export type AnalyzeIngredientsInput = z.infer<typeof AnalyzeIngredientsInputSchema>;
 
 const SubstitutionSchema = z.object({
-    ingredientToReplace: z.string().describe('The incompatible ingredient to be replaced.'),
-    suggestion: z.string().describe('The suggested ingredient to use instead.'),
-    reason: z.string().describe('A brief reason why this substitution is recommended.'),
+  ingredientToReplace: z.string().describe('The incompatible ingredient to be replaced.'),
+  suggestion: z.string().describe('The suggested ingredient to use instead.'),
+  reason: z.string().describe('A brief reason why this substitution is recommended.'),
 });
 
 const TasteSuggestionSchema = z.object({
-    suggestion: z.string().describe('A suggested ingredient to add for better taste.'),
-    reason: z.string().describe('A brief reason why this addition would improve the dish.'),
+  suggestion: z.string().describe('A suggested ingredient to add for better taste.'),
+  reason: z.string().describe('A brief reason why this addition would improve the dish.'),
 });
 
 const AnalyzeIngredientsOutputSchema = z.object({
@@ -42,7 +42,6 @@ const AnalyzeIngredientsOutputSchema = z.object({
   substitutions: z.array(SubstitutionSchema).optional().describe('A list of suggested substitutions to make the recipe compatible. If there are multiple incompatibilities, the suggestions should work together to create a cohesive and valid new recipe base.'),
   tasteSuggestions: z.array(TasteSuggestionSchema).optional().describe('A list of suggestions to improve the taste profile of the recipe, even if it is compatible.'),
 });
-export type AnalyzeIngredientsOutput = z.infer<typeof AnalyzeIngredientsOutputSchema>;
 
 export async function analyzeIngredients(input: AnalyzeIngredientsInput): Promise<AnalyzeIngredientsOutput> {
   return analyzeIngredientsFlow(input);
@@ -50,8 +49,8 @@ export async function analyzeIngredients(input: AnalyzeIngredientsInput): Promis
 
 const analyzeIngredientsPrompt = ai.definePrompt({
   name: 'analyzeIngredientsPrompt',
-  input: {schema: AnalyzeIngredientsInputSchema},
-  output: {schema: AnalyzeIngredientsOutputSchema},
+  input: { schema: AnalyzeIngredientsInputSchema },
+  output: { schema: AnalyzeIngredientsOutputSchema },
   prompt: `You are an expert Culinary Science Logic Engine built into a recipe generator website. Your job is to validate ingredient combinations before generating recipes. You must strictly follow food science, cultural, and dietary rules to prevent impossible or unsafe recipes.
 
 **1. Ingredient Compatibility Rules**
@@ -105,7 +104,7 @@ const analyzeIngredientsFlow = ai.defineFlow(
     outputSchema: AnalyzeIngredientsOutputSchema,
   },
   async input => {
-    const {output} = await analyzeIngredientsPrompt(input);
+    const { output } = await analyzeIngredientsPrompt(input);
     return output!;
   }
 );

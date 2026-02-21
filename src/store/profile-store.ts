@@ -8,6 +8,11 @@ export interface Profile {
   phone: string;
   bio: string;
   profilePhoto: string;
+  stats?: {
+    totalRecipes: number;
+    cookedRecipes: number;
+    successRate: number;
+  };
 }
 
 interface ProfileStore {
@@ -23,7 +28,12 @@ export const useProfileStore = create<ProfileStore>((set) => ({
     lastName: "",
     phone: "",
     bio: "",
-    profilePhoto: ""
+    profilePhoto: "",
+    stats: {
+      totalRecipes: 0,
+      cookedRecipes: 0,
+      successRate: 0,
+    }
   },
   setProfile: (profile) => set({ profile }),
 }));

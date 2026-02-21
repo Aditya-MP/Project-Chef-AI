@@ -10,8 +10,9 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, ChefHat, Home, Heart, Clock, User, LogOut, Sun, Moon, Laptop } from "lucide-react";
+import { Menu, ChefHat, Home, Heart, Clock, User, LogOut, Sun, Moon, Laptop, Settings } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "next-themes";
@@ -20,20 +21,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const mainNavLinks = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
+  { href: "/dashboard/recipe-generator", label: "Generate Recipe", icon: ChefHat },
 ];
 
 const recipeCollectionsLinks = [
-  { href: "/recent-recipes", label: "Recent Recipes", icon: Clock },
-  { href: "/favorite-recipes", label: "Favorite Recipes", icon: Heart },
+  { href: "/dashboard/recent-recipes", label: "Recent Recipes", icon: Clock },
+  { href: "/dashboard/favorite-recipes", label: "Favorite Recipes", icon: Heart },
 ];
 
 const accountLinks = [
-    { href: "/dashboard/profile", label: "Profile", icon: User },
+  { href: "/dashboard/profile", label: "Profile", icon: User },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 const landingPageLinks = [
-    { href: "/login", label: "Log In" },
-    { href: "/signup", label: "Sign Up" },
+  { href: "/login", label: "Log In" },
+  { href: "/signup", label: "Sign Up" },
 ];
 
 export function MobileHeader({ isLanding = false }: { isLanding?: boolean }) {
@@ -49,7 +52,7 @@ export function MobileHeader({ isLanding = false }: { isLanding?: boolean }) {
     setIsOpen(false);
     router.push("/");
   };
-  
+
   const handleLinkClick = (href: string) => {
     router.push(href);
     setIsOpen(false);
@@ -76,42 +79,42 @@ export function MobileHeader({ isLanding = false }: { isLanding?: boolean }) {
         </SheetHeader>
 
         {isLanding ? (
-            <nav className="flex-1 p-4 space-y-2">
-                 {landingPageLinks.map((link) => (
-                    <Button key={link.href} variant="ghost" className="w-full justify-start text-lg" onClick={() => handleLinkClick(link.href)}>
-                        {link.label}
-                    </Button>
-                 ))}
-            </nav>
+          <nav className="flex-1 p-4 space-y-2">
+            {landingPageLinks.map((link) => (
+              <Button key={link.href} variant="ghost" className="w-full justify-start text-lg" onClick={() => handleLinkClick(link.href)}>
+                {link.label}
+              </Button>
+            ))}
+          </nav>
         ) : (
           <>
             <nav className="flex-1 p-4 space-y-4">
-                {user && (
-                     <div className="flex items-center gap-3 px-2 mb-6">
-                        <Avatar>
-                            <AvatarImage src={user.photoURL || profile.profilePhoto} alt="Profile Photo" />
-                            <AvatarFallback>{profile.firstName?.[0]}{profile.lastName?.[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-semibold">{user.displayName || `${profile.firstName} ${profile.lastName}`}</p>
-                            <p className="text-sm text-muted-foreground truncate">{user.email}</p>
-                        </div>
-                    </div>
-                )}
-              
+              {user && (
+                <div className="flex items-center gap-3 px-2 mb-6">
+                  <Avatar>
+                    <AvatarImage src={user.photoURL || profile.profilePhoto} alt="Profile Photo" />
+                    <AvatarFallback>{profile.firstName?.[0]}{profile.lastName?.[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold">{user.displayName || `${profile.firstName} ${profile.lastName}`}</p>
+                    <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <h2 className="px-2 mb-2 text-lg font-semibold tracking-tight">Navigation</h2>
                 <div className="space-y-1">
                   {mainNavLinks.map((link) => (
-                    <Button
+                    <Link
                       key={link.href}
-                      variant={pathname === link.href ? "secondary" : "ghost"}
-                      className="w-full justify-start text-base"
-                      onClick={() => handleLinkClick(link.href)}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={cn("w-full justify-start text-base flex items-center h-10 px-4 py-2 rounded-md font-medium transition-colors hover:bg-accent hover:text-accent-foreground", pathname === link.href ? "bg-secondary text-secondary-foreground" : "text-foreground")}
                     >
-                      <link.icon className="mr-3" />
+                      <link.icon className="mr-3 h-5 w-5" />
                       {link.label}
-                    </Button>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -120,51 +123,51 @@ export function MobileHeader({ isLanding = false }: { isLanding?: boolean }) {
                 <h2 className="px-2 mb-2 text-lg font-semibold tracking-tight">Collections</h2>
                 <div className="space-y-1">
                   {recipeCollectionsLinks.map((link) => (
-                     <Button
-                        key={link.href}
-                        variant={pathname === link.href ? "secondary" : "ghost"}
-                        className="w-full justify-start text-base"
-                        onClick={() => handleLinkClick(link.href)}
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={cn("w-full justify-start text-base flex items-center h-10 px-4 py-2 rounded-md font-medium transition-colors hover:bg-accent hover:text-accent-foreground", pathname === link.href ? "bg-secondary text-secondary-foreground" : "text-foreground")}
                     >
-                      <link.icon className="mr-3" />
+                      <link.icon className="mr-3 h-5 w-5" />
                       {link.label}
-                    </Button>
+                    </Link>
                   ))}
                 </div>
               </div>
-               <div>
+              <div>
                 <h2 className="px-2 mb-2 text-lg font-semibold tracking-tight">Account</h2>
                 <div className="space-y-1">
                   {accountLinks.map((link) => (
-                     <Button
-                        key={link.href}
-                        variant={pathname === link.href ? "secondary" : "ghost"}
-                        className="w-full justify-start text-base"
-                        onClick={() => handleLinkClick(link.href)}
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={cn("w-full justify-start text-base flex items-center h-10 px-4 py-2 rounded-md font-medium transition-colors hover:bg-accent hover:text-accent-foreground", pathname === link.href ? "bg-secondary text-secondary-foreground" : "text-foreground")}
                     >
-                      <link.icon className="mr-3" />
+                      <link.icon className="mr-3 h-5 w-5" />
                       {link.label}
-                    </Button>
+                    </Link>
                   ))}
-                   <Button
-                        variant="ghost"
-                        className="w-full justify-start text-base"
-                        onClick={handleLogout}
-                    >
-                      <LogOut className="mr-3" />
-                      Log Out
-                    </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-base"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-3" />
+                    Log Out
+                  </Button>
                 </div>
               </div>
             </nav>
 
             <div className="mt-auto p-4 border-t">
-                <p className="font-semibold px-2 mb-2">Theme</p>
-                 <div className="flex justify-around">
-                    <Button variant="outline" size="icon" onClick={() => setTheme("light")}><Sun/></Button>
-                    <Button variant="outline" size="icon" onClick={() => setTheme("dark")}><Moon/></Button>
-                    <Button variant="outline" size="icon" onClick={() => setTheme("system")}><Laptop/></Button>
-                </div>
+              <p className="font-semibold px-2 mb-2">Theme</p>
+              <div className="flex justify-around">
+                <Button variant="outline" size="icon" onClick={() => setTheme("light")}><Sun /></Button>
+                <Button variant="outline" size="icon" onClick={() => setTheme("dark")}><Moon /></Button>
+                <Button variant="outline" size="icon" onClick={() => setTheme("system")}><Laptop /></Button>
+              </div>
             </div>
           </>
         )}

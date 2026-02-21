@@ -1,14 +1,20 @@
 
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from '@/hooks/use-auth';
-import { Literata } from 'next/font/google';
+import { Literata, Playfair_Display } from 'next/font/google';
 
 const literata = Literata({
   subsets: ['latin'],
   variable: '--font-literata',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
   display: 'swap',
 });
 
@@ -23,13 +29,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={literata.variable}>
-      <body className="font-body antialiased">
+    <html lang="en" suppressHydrationWarning className={`${literata.variable} ${playfair.variable}`}>
+      <body className="font-body antialiased" suppressHydrationWarning>
         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
           <AuthProvider>
             {children}

@@ -1,8 +1,9 @@
 "use server";
 
-import { generateRecipe, type GenerateRecipeInput, type GenerateRecipeOutput } from "@/ai/flows/generate-recipe-flow";
-import { analyzeIngredients, type AnalyzeIngredientsInput, type AnalyzeIngredientsOutput } from "@/ai/flows/analyze-ingredients-flow";
-import { analyzeImage, type AnalyzeImageInput, type AnalyzeImageOutput } from "@/ai/flows/analyze-image-flow";
+import { generateRecipe } from "@/ai/flows/generate-recipe-flow";
+import { analyzeIngredients } from "@/ai/flows/analyze-ingredients-flow";
+import { analyzeImage } from "@/ai/flows/analyze-image-flow";
+import type { GenerateRecipeInput, GenerateRecipeOutput, AnalyzeIngredientsInput, AnalyzeIngredientsOutput, AnalyzeImageInput, AnalyzeImageOutput } from "@/ai/types";
 import { z } from "zod";
 
 const RecipeActionInputSchema = z.object({
@@ -61,23 +62,23 @@ export async function handleAnalyzeIngredients(input: AnalyzeIngredientsInput): 
 }
 
 const AnalyzeImageActionInputSchema = z.object({
-    photoDataUri: z.string(),
-    ingredientCatalog: z.array(z.string()),
+  photoDataUri: z.string(),
+  ingredientCatalog: z.array(z.string()),
 });
 
 export async function handleAnalyzeImage(input: AnalyzeImageInput): Promise<{ data: AnalyzeImageOutput | null; error: string | null }> {
-    const parsedInput = AnalyzeImageActionInputSchema.safeParse(input);
+  const parsedInput = AnalyzeImageActionInputSchema.safeParse(input);
 
-    if (!parsedInput.success) {
-        const errorMessage = parsedInput.error.errors.map(e => e.message).join(", ");
-        return { data: null, error: errorMessage };
-    }
+  if (!parsedInput.success) {
+    const errorMessage = parsedInput.error.errors.map(e => e.message).join(", ");
+    return { data: null, error: errorMessage };
+  }
 
-    try {
-        const result = await analyzeImage(parsedInput.data);
-        return { data: result, error: null };
-    } catch (e) {
-        console.error(e);
-        return { data: null, error: "An unexpected error occurred during image analysis." };
-    }
+  try {
+    const result = await analyzeImage(parsedInput.data);
+    return { data: result, error: null };
+  } catch (e) {
+    console.error(e);
+    return { data: null, error: "An unexpected error occurred during image analysis." };
+  }
 }

@@ -1,9 +1,9 @@
 
-'use server';
+
 
 import { collection, doc, setDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { GenerateRecipeOutput } from '@/ai/flows/generate-recipe-flow';
+import type { GenerateRecipeOutput } from '@/ai/types';
 
 const USERS_COLLECTION = 'users';
 const RECIPES_COLLECTION = 'recipes';

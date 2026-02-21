@@ -8,8 +8,9 @@
  * - GenerateRecipeOutput - The return type for the generateRecipe function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+import type { GenerateRecipeInput, GenerateRecipeOutput } from '@/ai/types';
 
 const getRecipeFromMealDBTool = ai.defineTool(
   {
@@ -33,7 +34,7 @@ const getRecipeFromMealDBTool = ai.defineTool(
       if (!data.meals || data.meals.length === 0) {
         return { info: 'No recipes found for the primary ingredient.' };
       }
-      
+
       // Fetch the full details of the first meal found
       const mealDetailsResponse = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${data.meals[0].idMeal}`);
       const mealDetailsData = await mealDetailsResponse.json();
@@ -53,7 +54,6 @@ const GenerateRecipeInputSchema = z.object({
   glutenFree: z.boolean().optional().describe('Whether the recipe should be gluten-free.'),
   highProtein: z.boolean().optional().describe('Whether the recipe should be high in protein.'),
 });
-export type GenerateRecipeInput = z.infer<typeof GenerateRecipeInputSchema>;
 
 const GenerateRecipeOutputSchema = z.object({
   recipeName: z.string().describe('The name of the generated recipe.'),
@@ -61,7 +61,6 @@ const GenerateRecipeOutputSchema = z.object({
   requiredIngredients: z.array(z.string()).describe('A list of ingredients required for the recipe.'),
   alternativeSuggestions: z.array(z.string()).describe('Alternative suggestions for the recipe, e.g., substitutions.'),
 });
-export type GenerateRecipeOutput = z.infer<typeof GenerateRecipeOutputSchema>;
 
 export async function generateRecipe(input: GenerateRecipeInput): Promise<GenerateRecipeOutput> {
   return generateRecipeFlow(input);
@@ -69,14 +68,16 @@ export async function generateRecipe(input: GenerateRecipeInput): Promise<Genera
 
 const generateRecipePrompt = ai.definePrompt({
   name: 'generateRecipePrompt',
-  input: {schema: GenerateRecipeInputSchema},
-  output: {schema: GenerateRecipeOutputSchema},
+  input: { schema: GenerateRecipeInputSchema },
+  output: { schema: GenerateRecipeOutputSchema },
   tools: [getRecipeFromMealDBTool],
-  prompt: `You are a world-class chef who specializes in writing clear, detailed, and easy-to-follow recipes for home cooks. Use the getRecipeFromMealDB tool to find a base recipe.
+  prompt: `You are a world-class chef who specializes in writing clear, detailed, and easy-to-follow recipes for home cooks.
   
-If the tool returns a recipe, adapt it to meet the user's dietary preferences ({{vegetarian}}, {{vegan}}, {{glutenFree}}, {{highProtein}}). Extract the recipe name, create a list of required ingredients with their measurements, and then write a new set of very detailed, step-by-step cooking instructions.
+Create a unique and delicious recipe using the provided Ingredients. You may use the getRecipeFromMealDB tool for inspiration if needed, but it is often better to generate a custom recipe from scratch to perfectly match the user's dietary preferences ({{vegetarian}}, {{vegan}}, {{glutenFree}}, {{highProtein}}).
 
-If the tool does not find a suitable recipe, generate a new one from scratch based on all the provided ingredients and dietary preferences.
+If you use the tool and it returns a recipe, you MUST adapt it to meet the dietary preferences.
+
+If you create one from scratch, ensure it uses the provided ingredients creatively.
 
 When creating the steps, be extremely detailed. Explain not just what to do, but how to do it. For example, instead of "cook onions", write "Sauté the chopped onions in olive oil over medium heat for 5-7 minutes, stirring occasionally, until they become translucent and fragrant." Mention specific timings, temperatures, and visual cues.
 
@@ -87,7 +88,7 @@ Gluten-Free: {{glutenFree}}
 High-Protein: {{highProtein}}
 
 Return the recipe in the specified JSON format.
-`, 
+`,
 });
 
 const generateRecipeFlow = ai.defineFlow(
@@ -97,7 +98,7 @@ const generateRecipeFlow = ai.defineFlow(
     outputSchema: GenerateRecipeOutputSchema,
   },
   async input => {
-    const {output} = await generateRecipePrompt(input);
+    const { output } = await generateRecipePrompt(input);
     return output!;
   }
 );

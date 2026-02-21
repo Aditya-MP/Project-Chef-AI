@@ -9,15 +9,20 @@ interface SpeechRecognitionOptions {
 }
 
 // Check if the browser supports the Web Speech API
-const isBrowser = typeof window !== 'undefined';
-const SpeechRecognition = isBrowser ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
+
+interface IWindow extends Window {
+  SpeechRecognition: any;
+  webkitSpeechRecognition: any;
+}
+
+const SpeechRecognition = typeof window !== 'undefined' ? ((window as unknown as IWindow).SpeechRecognition || (window as unknown as IWindow).webkitSpeechRecognition) : null;
 
 export function useSpeechRecognition(options: SpeechRecognitionOptions = {}) {
   const { onTranscriptChanged, onListeningChanged } = options;
 
   const [transcript, setTranscript] = useState('');
   const [listening, setListening] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     if (!SpeechRecognition) {
@@ -30,7 +35,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}) {
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       let finalTranscript = '';
       let interimTranscript = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -54,8 +59,8 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}) {
         onListeningChanged(false);
       }
     };
-    
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+
+    recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       setListening(false);
       if (onListeningChanged) {
@@ -85,7 +90,7 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}) {
     if (recognitionRef.current && listening) {
       recognitionRef.current.stop();
       setListening(false);
-       if (onListeningChanged) {
+      if (onListeningChanged) {
         onListeningChanged(false);
       }
     }
@@ -100,4 +105,3 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}) {
   };
 }
 
-    
