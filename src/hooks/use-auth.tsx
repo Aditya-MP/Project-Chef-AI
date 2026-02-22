@@ -2,7 +2,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, updateProfile, updateEmail, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+import { onAuthStateChanged, User, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, sendPasswordResetEmail, updateProfile, updateEmail, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { getUserProfile, createUserProfile, saveUserProfile } from '@/services/profile-service';
 import { useProfileStore, type Profile } from '@/store/profile-store';
@@ -97,6 +97,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // Aggressive mobile browsers often block popups. Redirect is much more reliable.
+        // The page will navigate away and return. onAuthStateChanged will handle the rest!
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+
+      // Desktop flow uses popup
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
