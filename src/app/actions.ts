@@ -29,8 +29,8 @@ export async function handleGenerateRecipe(input: GenerateRecipeInput): Promise<
     }
     return { data: recipe, error: null };
   } catch (e) {
-    console.error(e);
-    return { data: null, error: "An unexpected error occurred while generating the recipe. Please try again later." };
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    return { data: null, error: `Recipe Gen Error: ${errorMessage}` };
   }
 }
 
@@ -56,8 +56,8 @@ export async function handleAnalyzeIngredients(input: AnalyzeIngredientsInput): 
     const analysis = await analyzeIngredients(parsedInput.data);
     return { data: analysis, error: null };
   } catch (e) {
-    console.error(e);
-    return { data: null, error: "An unexpected error occurred during ingredient analysis." };
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    return { data: null, error: `Ingredient Analysis Error: ${errorMessage}` };
   }
 }
 
@@ -78,7 +78,7 @@ export async function handleAnalyzeImage(input: AnalyzeImageInput): Promise<{ da
     const result = await analyzeImage(parsedInput.data);
     return { data: result, error: null };
   } catch (e) {
-    console.error(e);
-    return { data: null, error: "An unexpected error occurred during image analysis." };
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    return { data: null, error: `Image Analysis Error: ${errorMessage}` };
   }
 }
