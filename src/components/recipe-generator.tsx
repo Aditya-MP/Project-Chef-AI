@@ -543,24 +543,24 @@ export function RecipeGenerator() {
             <Input
               type="search"
               placeholder="What's in your kitchen today?"
-              className="pl-14 pr-56 h-20 rounded-[2rem] bg-white/60 dark:bg-black/60 backdrop-blur-2xl border-white/40 dark:border-white/10 text-xl font-medium focus:ring-4 focus:ring-primary/10 shadow-2xl transition-all duration-500 hover:bg-white/80 dark:hover:bg-black/50"
+              className="pl-12 md:pl-14 pr-[7rem] md:pr-56 h-14 md:h-20 rounded-2xl md:rounded-[2rem] bg-white/60 dark:bg-black/60 backdrop-blur-2xl border-white/40 dark:border-white/10 text-base md:text-xl font-medium focus:ring-4 focus:ring-primary/10 shadow-2xl transition-all duration-500 hover:bg-white/80 dark:hover:bg-black/50"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <div className="absolute right-3 top-3 flex gap-2">
+            <div className="absolute right-2 md:right-3 top-2 md:top-3 flex items-center gap-1 md:gap-2">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleMicClick}
-                className={cn("h-14 w-14 shrink-0 rounded-full hover:bg-primary/10 transition-colors duration-300", listening && "text-destructive animate-pulse bg-destructive/10")}
+                className={cn("h-10 w-10 md:h-14 md:w-14 shrink-0 rounded-full hover:bg-primary/10 transition-colors duration-300", listening && "text-destructive animate-pulse bg-destructive/10")}
               >
-                <Mic className="h-6 w-6" />
+                <Mic className="h-5 w-5 md:h-6 md:w-6" />
               </Button>
-              <div className="h-10 w-px bg-border/50 my-auto shrink-0" />
+              <div className="h-6 md:h-10 w-px bg-border/50 my-auto shrink-0" />
               <Dialog open={isCameraOpen} onOpenChange={setIsCameraOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-14 w-14 shrink-0 rounded-full hover:bg-primary/10 transition-colors duration-300 text-muted-foreground hover:text-primary">
-                    <Camera className="h-6 w-6" />
+                  <Button variant="ghost" size="icon" className="h-10 w-10 md:h-14 md:w-14 shrink-0 rounded-full hover:bg-primary/10 transition-colors duration-300 text-muted-foreground hover:text-primary">
+                    <Camera className="h-5 w-5 md:h-6 md:w-6" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-xl backdrop-blur-3xl bg-white/80 dark:bg-black/80 border-white/20 shadow-2xl">
@@ -598,8 +598,8 @@ export function RecipeGenerator() {
                 accept="image/*"
                 onChange={handleFileChange}
               />
-              <Button variant="ghost" size="icon" onClick={handleUploadClick} className="h-14 w-14 shrink-0 rounded-full hover:bg-primary/10 transition-colors duration-300 text-muted-foreground hover:text-primary">
-                <Upload className="h-6 w-6" />
+              <Button variant="ghost" size="icon" onClick={handleUploadClick} className="h-10 w-10 md:h-14 md:w-14 shrink-0 rounded-full hover:bg-primary/10 transition-colors duration-300 text-muted-foreground hover:text-primary">
+                <Upload className="h-5 w-5 md:h-6 md:w-6" />
               </Button>
             </div>
           </div>
@@ -611,7 +611,7 @@ export function RecipeGenerator() {
                 <div
                   key={key}
                   className={cn(
-                    "flex items-center gap-2 px-6 py-3 rounded-2xl border transition-all duration-300 cursor-pointer select-none ring-1 ring-inset",
+                    "flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 rounded-2xl border transition-all duration-300 cursor-pointer select-none ring-1 ring-inset",
                     dietaryPreferences[key as keyof typeof dietaryPreferences]
                       ? "bg-primary/90 text-primary-foreground border-transparent shadow-lg shadow-primary/25 ring-primary/50"
                       : "bg-white/40 dark:bg-black/40 border-white/20 hover:bg-white/60 hover:scale-105"
@@ -711,7 +711,7 @@ export function RecipeGenerator() {
           )}
 
           {/* Selected Pantry Visualizer */}
-          <div className="glass-card-ultra rounded-[2.5rem] p-8 flex flex-col min-h-[400px] relative overflow-hidden group">
+          <div className="glass-card-ultra rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 flex flex-col min-h-[250px] md:min-h-[400px] relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/20 to-orange-500/20 blur-[100px] rounded-full pointer-events-none group-hover:opacity-70 transition-opacity duration-1000" />
 
             <div className="flex justify-between items-center mb-6 relative z-10">
@@ -757,15 +757,15 @@ export function RecipeGenerator() {
             </div>
 
             {/* Integrated Generate Action */}
-            <div className="mt-8 pt-6 border-t border-white/10 relative z-10">
+            <div className="mt-6 md:mt-8 pt-6 border-t border-white/10 relative z-10">
               <Button
                 onClick={handleSubmit}
                 disabled={isAnalysisLoading || isLoading || isImageAnalysisLoading || selectedIngredients.length === 0}
-                className="w-full text-2xl h-24 rounded-[2rem] shadow-2xl shadow-primary/30 bg-gradient-to-r from-primary via-orange-500 to-primary bg-[length:200%_auto] text-white transition-all duration-200 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group border-t border-white/20 animate-shimmer"
+                className="w-full text-lg md:text-2xl h-16 md:h-24 rounded-2xl md:rounded-[2rem] shadow-2xl shadow-primary/30 bg-gradient-to-r from-primary via-orange-500 to-primary bg-[length:200%_auto] text-white transition-all duration-200 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group border-t border-white/20 animate-shimmer"
               >
                 <div className="flex flex-col items-center gap-1">
                   <div className="flex items-center gap-3">
-                    {(isAnalysisLoading || isLoading || isImageAnalysisLoading) ? <Loader2 className="h-8 w-8 animate-spin" /> : <Sparkles className="h-8 w-8 group-hover:animate-spin-slow transition-transform" />}
+                    {(isAnalysisLoading || isLoading || isImageAnalysisLoading) ? <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin" /> : <Sparkles className="h-6 w-6 md:h-8 md:w-8 group-hover:animate-spin-slow transition-transform" />}
                     <span className="font-headline tracking-wide font-bold">{isAnalysisLoading ? 'Analyzing...' : (isLoading ? 'Creating Magic...' : (isImageAnalysisLoading ? 'Processing Image...' : 'Generate Masterpiece'))}</span>
                   </div>
                   {!(isAnalysisLoading || isLoading || isImageAnalysisLoading) && <span className="text-xs font-normal opacity-80 uppercase tracking-[0.2em]">AI Powered Chef</span>}
