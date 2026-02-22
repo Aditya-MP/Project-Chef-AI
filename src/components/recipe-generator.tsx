@@ -307,10 +307,8 @@ export function RecipeGenerator() {
     });
   }, [dietaryPreferences]);
 
-  useEffect(() => {
-    // Deselect ingredients that are no longer available after a filter change
-    setSelectedIngredients(prev => prev.filter(selected => availableIngredients.some(available => available.name === selected)));
-  }, [availableIngredients]);
+  // Removed the useEffect that automatically stripped custom ingredients
+  // when dietary preferences change, allowing custom ingredients to persist.
 
   useEffect(() => {
     let stream: MediaStream;
@@ -680,6 +678,34 @@ export function RecipeGenerator() {
                     )}
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Custom Ingredient Adder */}
+          {searchTerm && filteredIngredients.length === 0 && (
+            <div className="animate-in fade-in slide-in-from-left-4 duration-500 mb-6">
+              <div
+                className="flex justify-between items-center p-4 rounded-3xl glass-card border border-white/20 hover:border-primary/40 hover:bg-white/10 dark:hover:bg-black/10 transition-all cursor-pointer group shadow-lg"
+                onClick={() => {
+                  if (searchTerm.trim() !== '') {
+                    handleIngredientToggle(searchTerm.trim());
+                    setSearchTerm(''); // clear search after adding
+                  }
+                }}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <Label className="text-lg font-semibold tracking-tight cursor-pointer">Add "{searchTerm}"</Label>
+                    <p className="text-sm text-muted-foreground">Not in our database, but we can try!</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="icon" className="group-hover:bg-primary group-hover:text-white rounded-full">
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
               </div>
             </div>
           )}

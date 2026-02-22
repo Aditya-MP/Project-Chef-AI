@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { GenerateRecipeOutput } from '@/ai/types';
-import { getRecipes, saveRecipe, removeRecipe } from '@/services/recipe-service';
+import { getRecipes, saveRecipe, removeRecipe, saveGeneratedRecipe } from '@/services/recipe-service';
 import { logActivity, incrementStat, getActivities, type ActivityItem, addMealPlan, getMealPlans, type MealPlanItem } from '@/services/profile-service';
 
 export type Recipe = GenerateRecipeOutput & {
@@ -35,12 +35,14 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
   selectedRecipe: null,
 
   addRecentRecipe: async (recipe, uid) => {
-    // We increment generated stat and log activity when a new recipe is generated
     await incrementStat(uid, 'totalRecipes');
     await get().logEvent(uid, {
       title: `Generated '${recipe.recipeName}'`,
       type: 'recipe',
     });
+
+    // Save universally to the database history
+    await saveGeneratedRecipe(uid, recipe);
 
     set((state) => {
       const filteredRecents = state.recentRecipes.filter(r => r.recipeName !== recipe.recipeName);
@@ -73,7 +75,10 @@ export const useRecipeStore = create<RecipeStore>((set, get) => ({
 
   loadRecipes: async (uid: string) => {
     const recipes = await getRecipes(uid);
-    set({ favoriteRecipes: recipes.filter(r => r.isFavorite) });
+    set({
+      favoriteRecipes: recipes.filter(r => r.isFavorite),
+      recentRecipes: recipes // populate recentRecipes with all fetched recipes (which are already sorted by date)
+    });
   },
 
   loadActivities: async (uid: string) => {
