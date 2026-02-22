@@ -1,5 +1,5 @@
 [build]
-  command = "npm ci && npm run build && chmod -R 755 .next"
+  command = "npm install && npm run build && chmod -R 755 .next"
   publish = ".next"
 
 [build.environment]
