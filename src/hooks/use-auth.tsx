@@ -37,13 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           let userProfile = await getUserProfile(user.uid);
           if (!userProfile) {
             const newProfileData: Profile = {
-                firstName: user.displayName?.split(' ')[0] || '',
-                lastName: user.displayName?.split(' ')[1] || '',
-                email: user.email || '',
-                profilePhoto: user.photoURL || '',
-                username: user.email?.split('@')[0] || '',
-                phone: user.phoneNumber || '',
-                bio: ''
+              firstName: user.displayName?.split(' ')[0] || '',
+              lastName: user.displayName?.split(' ')[1] || '',
+              email: user.email || '',
+              profilePhoto: user.photoURL || '',
+              username: user.email?.split('@')[0] || '',
+              phone: user.phoneNumber || '',
+              bio: ''
             };
             await createUserProfile(user.uid, newProfileData);
             userProfile = newProfileData;
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setUser(null);
         setProfile({
-            username: "", email: "", firstName: "", lastName: "", phone: "", bio: "", profilePhoto: ""
+          username: "", email: "", firstName: "", lastName: "", phone: "", bio: "", profilePhoto: ""
         });
         clearRecipes();
       }
@@ -64,21 +64,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, [setProfile, clearRecipes]);
 
-  const login = (email: string, pass: string) => {
-    return signInWithEmailAndPassword(auth, email, pass);
+  const login = async (email: string, pass: string) => {
+    try {
+      return await signInWithEmailAndPassword(auth, email, pass);
+    } catch (error) {
+      console.error("[Auth Debug] login failed:", error);
+      throw error;
+    }
   };
-  
+
   const signup = async (email: string, pass: string) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     const user = userCredential.user;
     const profileData: Profile = {
-        email,
-        firstName: '',
-        lastName: '',
-        username: email.split('@')[0],
-        profilePhoto: '',
-        phone: '',
-        bio: ''
+      email,
+      firstName: '',
+      lastName: '',
+      username: email.split('@')[0],
+      profilePhoto: '',
+      phone: '',
+      bio: ''
     };
     await createUserProfile(user.uid, profileData);
     setProfile(profileData);
@@ -90,14 +95,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
-    // Check if user profile already exists, if not, create one
-    const existingProfile = await getUserProfile(user.uid);
-    if (!existingProfile) {
-        const profileData: Profile = {
+      // Check if user profile already exists, if not, create one
+      try {
+        const existingProfile = await getUserProfile(user.uid);
+        if (!existingProfile) {
+          const profileData: Profile = {
             email: user.email || '',
             firstName: user.displayName?.split(' ')[0] || '',
             lastName: user.displayName?.split(' ')[1] || '',
@@ -105,15 +112,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             profilePhoto: user.photoURL || '',
             phone: user.phoneNumber || '',
             bio: ''
-        };
-        await createUserProfile(user.uid, profileData);
-        setProfile(profileData);
-    } else {
-        setProfile(existingProfile);
+          };
+          await createUserProfile(user.uid, profileData);
+          setProfile(profileData);
+        } else {
+          setProfile(existingProfile);
+        }
+        return result;
+      } catch (profileError) {
+        console.error("[Auth Debug] Google Login - Profile sync failed:", profileError);
+        throw profileError;
+      }
+    } catch (error) {
+      console.error("[Auth Debug] Google Login completely failed:", error);
+      throw error;
     }
-    return result;
-  }
-
+  };
   const sendPasswordReset = (email: string) => {
     return sendPasswordResetEmail(auth, email);
   }
@@ -133,23 +147,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateUserEmail = async (newEmail: string) => {
     if (auth.currentUser) {
-        await updateEmail(auth.currentUser, newEmail);
-        // Also update the email in our database
-        await saveUserProfile(auth.currentUser.uid, { ...profile, email: newEmail });
+      await updateEmail(auth.currentUser, newEmail);
+      // Also update the email in our database
+      await saveUserProfile(auth.currentUser.uid, { ...profile, email: newEmail });
     } else {
-        throw new Error("No user is currently signed in.");
+      throw new Error("No user is currently signed in.");
     }
   }
 
   const updateUserProfile = async (profileData: Partial<Profile>) => {
-      if (auth.currentUser) {
-          await updateProfile(auth.currentUser, {
-              displayName: `${profileData.firstName} ${profileData.lastName}`,
-              photoURL: profileData.profilePhoto,
-          });
-      } else {
-          throw new Error("No user is currently signed in.");
-      }
+    if (auth.currentUser) {
+      await updateProfile(auth.currentUser, {
+        displayName: `${profileData.firstName} ${profileData.lastName}`,
+        photoURL: profileData.profilePhoto,
+      });
+    } else {
+      throw new Error("No user is currently signed in.");
+    }
   }
 
   const value = { user, loading, login, signup, logout, loginWithGoogle, sendPasswordReset, changePassword, updateUserEmail, updateUserProfile };
@@ -165,4 +179,3 @@ export function useAuth() {
   return context;
 }
 
-    
