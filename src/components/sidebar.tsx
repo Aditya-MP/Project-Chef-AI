@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ChefHat, Home, Heart, Clock, Settings, LogOut, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 const mainNavLinks = [
   { href: "/dashboard", label: "Studio", icon: Home },
@@ -15,6 +16,7 @@ const mainNavLinks = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <aside className="w-80 h-[calc(100vh-2rem)] m-4 rounded-3xl bg-black/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 dark:border-white/5 flex flex-col shadow-2xl ring-1 ring-white/10 overflow-hidden relative">
@@ -78,6 +80,14 @@ export function Sidebar() {
             >
               <Settings className="mr-3 h-5 w-5" /> Settings
             </Link>
+
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-4 py-2 mt-2 h-10 transition-colors"
+              onClick={() => logout()}
+            >
+              <LogOut className="mr-3 h-5 w-5" /> Log Out
+            </Button>
           </div>
         </div>
       </div>
